@@ -1,9 +1,11 @@
 import { default as React, useState, useEffect } from "react";
 import { StockItem } from "./StockDto";
 import "./App.css";
+import { useInterval } from "./useInterval";
 
 function App() {
-  const [price, setPrice] = useState("0");
+  const [price, setPrice] = useState<Array<string>>([]);
+  const [oldPrice, setOldPrice] = useState<Array<string>>([]);
   const [startTime, setStartTime] = useState("");
 
   const getStockPrice = () => {
@@ -16,14 +18,22 @@ function App() {
       });
   };
 
+  useInterval(getStockPrice, 5000);
+
   useEffect(() => {
-    setInterval(() => {
-      getStockPrice();
-    }, 5000);
+    getStockPrice();
   }, []);
 
   const updateStockDetails = (stockItem: StockItem) => {
-    setPrice(stockItem.close);
+    const splitPrice = splitPriceSpans(stockItem);
+    const currentPrice = price;
+
+    setPrice(splitPrice);
+    if (oldPrice.length <= 0) {
+      setOldPrice(splitPrice);
+    } else {
+      setOldPrice(currentPrice);
+    }
 
     const startTimeFormatted = formatStartDate(
       stockItem.startTime.seconds,
@@ -38,6 +48,11 @@ function App() {
     freshDate.setMilliseconds(milliseconds);
 
     return freshDate;
+  };
+
+  const splitPriceSpans = (stockItem: StockItem): Array<string> => {
+    const priceCharacters = stockItem.close.split("");
+    return priceCharacters;
   };
 
   return (
@@ -60,8 +75,22 @@ function App() {
                   <dt className="order-2 mt-2 text-lg font-medium leading-6 text-gray-500">
                     ETH/USD
                   </dt>
-                  <dd className="order-1 text-5xl font-extrabold text-gray-500">
-                    {price}
+                  <dd className="order-1 text-5xl font-extrabold">
+                    {price.map((unit, index) => {
+                      let style = "text-gray-500";
+                      if (parseInt(unit, 10) > parseInt(oldPrice[index], 10)) {
+                        style = "text-green-500";
+                      } else if (
+                        parseInt(unit, 10) < parseInt(oldPrice[index], 10)
+                      ) {
+                        style = "text-red-500";
+                      }
+                      return (
+                        <span key={`unit-${index}`} className={style}>
+                          {unit}
+                        </span>
+                      );
+                    })}
                   </dd>
                 </div>
               </dl>
