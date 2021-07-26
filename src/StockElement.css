@@ -1,6 +1,5 @@
 .tooltip {
   position: relative;
-  display: inline-block;
   width: 100%;
 }
 
@@ -19,4 +18,17 @@
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+.round-left {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-right: 2px solid black;
+  border: 2px solid black;
+}
+
+.round-right {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border: 2px solid black;
 }
