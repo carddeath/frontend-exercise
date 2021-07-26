@@ -10,7 +10,6 @@ function App() {
       .then((stockItem: StockItem) => {
         if (stockItem) {
           setPrice(stockItem.close);
-          console.log(stockItem.close);
         }
       });
   };
