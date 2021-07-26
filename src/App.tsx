@@ -1,6 +1,26 @@
-import { default as React } from "react";
+import { default as React, useState, useEffect } from "react";
+import { StockItem } from "./StockDto";
 
 function App() {
+  const [price, setPrice] = useState("0");
+
+  const getStockPrice = () => {
+    fetch("http://34.117.120.204/api/v1/fx/ETHUSD/ohlc")
+      .then((response) => response.json())
+      .then((stockItem: StockItem) => {
+        if (stockItem) {
+          setPrice(stockItem.close);
+          console.log(stockItem.close);
+        }
+      });
+  };
+
+  useEffect(() => {
+    setInterval(() => {
+      getStockPrice();
+    }, 5000);
+  }, []);
+
   return (
     <div className="pt-12 bg-gray-50 sm:pt-16">
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -21,7 +41,7 @@ function App() {
                     ETH/USD
                   </dt>
                   <dd className="order-1 text-5xl font-extrabold text-gray-500">
-                    $1919<span className="text-2xl">.17</span>
+                    {price}
                   </dd>
                 </div>
               </dl>
